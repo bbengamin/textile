@@ -3,7 +3,16 @@ class ControllerCommonHeader extends Controller {
 	public function index() {
 		// Analytics
 		$this->load->model('extension/extension');
+		
+		$this->document->addStyle('catalog/view/javascript/jquery/owl-carousel/owl.carousel.css');
+		$this->document->addScript('catalog/view/javascript/jquery/owl-carousel/owl.carousel.min.js');
 
+		
+		if(isset($this->request->get['path'])){
+			$path_arr = explode("_" , $this->request->get['path']);
+			$data['level1'] = $path_arr[0];
+		}
+		
 		$data['analytics'] = array();
 
 		$analytics = $this->model_extension_extension->getExtensions('analytics');
@@ -84,6 +93,7 @@ class ControllerCommonHeader extends Controller {
 		$data['checkout'] = $this->url->link('checkout/checkout', '', 'SSL');
 		$data['contact'] = $this->url->link('information/contact');
 		$data['telephone'] = $this->config->get('config_telephone');
+		$data['telephone2'] = $this->config->get('config_telephone2');
 
 		$status = true;
 
@@ -129,6 +139,7 @@ class ControllerCommonHeader extends Controller {
 
 				// Level 1
 				$data['categories'][] = array(
+					'category_id'     => $category['category_id'],
 					'name'     => $category['name'],
 					'children' => $children_data,
 					'column'   => $category['column'] ? $category['column'] : 1,
@@ -136,11 +147,12 @@ class ControllerCommonHeader extends Controller {
 				);
 			}
 		}
-
+		
 		$data['language'] = $this->load->controller('common/language');
 		$data['currency'] = $this->load->controller('common/currency');
 		$data['search'] = $this->load->controller('common/search');
-		$data['cart'] = $this->load->controller('common/cart');
+		$data['cart'] = $this->cart->countProducts();
+		
 
 		// For page specific css
 		if (isset($this->request->get['route'])) {
@@ -154,7 +166,7 @@ class ControllerCommonHeader extends Controller {
 				$class = '';
 			}
 
-			$data['class'] = str_replace('/', '-', $this->request->get['route']) . $class;
+			$data['class'] = 'checkout-buy';//str_replace('/', '-', $this->request->get['route']) . $class;
 		} else {
 			$data['class'] = 'common-home';
 		}

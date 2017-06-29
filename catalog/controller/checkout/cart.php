@@ -341,7 +341,7 @@ class ControllerCheckoutCart extends Controller {
 			if (!$json) {
 				$this->cart->add($this->request->post['product_id'], $quantity, $option, $recurring_id);
 
-				$json['success'] = sprintf($this->language->get('text_success'), $this->url->link('product/product', 'product_id=' . $this->request->post['product_id']), $product_info['name'], $this->url->link('checkout/cart'));
+				;
 
 				// Unset all shipping and payment methods
 				unset($this->session->data['shipping_method']);
@@ -385,7 +385,9 @@ class ControllerCheckoutCart extends Controller {
 					array_multisort($sort_order, SORT_ASC, $total_data);
 				}
 
-				$json['total'] = sprintf($this->language->get('text_items'), $this->cart->countProducts() + (isset($this->session->data['vouchers']) ? count($this->session->data['vouchers']) : 0), $this->currency->format($total));
+				$json['total'] = $this->cart->countProducts();
+				$input = array('product_id' => $this->request->post['product_id']);
+				$json['form'] = $this->load->controller('checkout/after_cart', $input);
 			} else {
 				$json['redirect'] = str_replace('&amp;', '&', $this->url->link('product/product', 'product_id=' . $this->request->post['product_id']));
 			}

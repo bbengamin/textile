@@ -1,6 +1,6 @@
-<div>
+<div class='html-block'>
   <?php if($heading_title) { ?>
-    <h2><?php echo $heading_title; ?></h2>
+    <h2 class='name-h2'><?php echo $heading_title; ?></h2>
   <?php } ?>
   <?php echo $html; ?>
 </div>

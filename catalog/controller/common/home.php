@@ -8,7 +8,7 @@ class ControllerCommonHome extends Controller {
 		if (isset($this->request->get['route'])) {
 			$this->document->addLink(HTTP_SERVER, 'canonical');
 		}
-
+		
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['column_right'] = $this->load->controller('common/column_right');
 		$data['content_top'] = $this->load->controller('common/content_top');

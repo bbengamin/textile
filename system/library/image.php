@@ -76,50 +76,48 @@ class Image {
 		if (!$this->width || !$this->height) {
 			return;
 		}
-
-		$xpos = 0;
-		$ypos = 0;
-		$scale = 1;
-
-		$scale_w = $width / $this->width;
-		$scale_h = $height / $this->height;
-
-		if ($default == 'w') {
-			$scale = $scale_w;
-		} elseif ($default == 'h') {
-			$scale = $scale_h;
-		} else {
-			$scale = min($scale_w, $scale_h);
+		
+		
+		
+		$scale_w = $width / $height;
+		$scale_h = $height / $width;
+		
+		$new_height = 0;
+		$new_width = 0;
+		
+		if($scale_w < 1){
+			$scale_h = 1;
+			
+			$new_height = $this->height * $scale_h;
+			$new_width = $this->height * $scale_w;
+			
+			if($this->width < $new_width){
+				$new_width = $this->width;
+				$new_height = $this->width / $scale_w;
+			}
+		}else{
+			$scale_w = 1;
+			
+			$new_height = $this->width * $scale_h;
+			$new_width = $this->width * $scale_w;
+			
+				if($this->height < $new_height){
+				$new_height = $this->height;
+				$new_width = $this->height / $scale_h;
+			}
 		}
+		
+		$pos_w = abs(($new_width - $width) / 2);
+		$pos_h = abs(($new_height - $height) / 2);
 
-		if ($scale == 1 && $scale_h == $scale_w && $this->mime != 'image/png') {
-			return;
-		}
-
-		$new_width = (int)($this->width * $scale);
-		$new_height = (int)($this->height * $scale);
-		$xpos = (int)(($width - $new_width) / 2);
-		$ypos = (int)(($height - $new_height) / 2);
 
 		$image_old = $this->image;
 		$this->image = imagecreatetruecolor($width, $height);
-
-		if ($this->mime == 'image/png') {
-			imagealphablending($this->image, false);
-			imagesavealpha($this->image, true);
-			$background = imagecolorallocatealpha($this->image, 255, 255, 255, 127);
-			imagecolortransparent($this->image, $background);
-		} else {
-			$background = imagecolorallocate($this->image, 255, 255, 255);
-		}
-
-		imagefilledrectangle($this->image, 0, 0, $width, $height, $background);
-
-		imagecopyresampled($this->image, $image_old, $xpos, $ypos, 0, 0, $new_width, $new_height, $this->width, $this->height);
+		imagecopyresampled($this->image, $image_old, 0, 0, 0,0, $width, $height, $new_width, $new_height);
 		imagedestroy($image_old);
-
 		$this->width = $width;
 		$this->height = $height;
+		
 	}
 
 	public function watermark($watermark, $position = 'bottomright') {

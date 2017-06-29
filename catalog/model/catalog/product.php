@@ -47,6 +47,9 @@ class ModelCatalogProduct extends Model {
 				'minimum'          => $query->row['minimum'],
 				'sort_order'       => $query->row['sort_order'],
 				'status'           => $query->row['status'],
+				'bestseller'           => $query->row['bestseller'],
+				'latest'           => $query->row['latest'],
+				'sale'           => $query->row['sale'],
 				'date_added'       => $query->row['date_added'],
 				'date_modified'    => $query->row['date_modified'],
 				'viewed'           => $query->row['viewed']

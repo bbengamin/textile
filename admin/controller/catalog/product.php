@@ -110,7 +110,7 @@ class ControllerCatalogProduct extends Controller {
 				$url .= '&page=' . $this->request->get['page'];
 			}
 
-			$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+			$this->response->redirect($this->url->link('catalog/product/edit', 'token=' . $this->session->data['token'] . $url . "&product_id=" . $this->request->get['product_id'], 'SSL'));
 		}
 
 		$this->getForm();
@@ -938,6 +938,30 @@ class ControllerCatalogProduct extends Controller {
 		} else {
 			$data['status'] = true;
 		}
+		
+		if (isset($this->request->post['sale'])) {
+			$data['sale'] = $this->request->post['sale'];
+		} elseif (!empty($product_info)) {
+			$data['sale'] = $product_info['sale'];
+		} else {
+			$data['sale'] = false;
+		}
+		
+		if (isset($this->request->post['latest'])) {
+			$data['latest'] = $this->request->post['latest'];
+		} elseif (!empty($product_info)) {
+			$data['latest'] = $product_info['latest'];
+		} else {
+			$data['latest'] = false;
+		}
+		
+		if (isset($this->request->post['bestseller'])) {
+			$data['bestseller'] = $this->request->post['bestseller'];
+		} elseif (!empty($product_info)) {
+			$data['bestseller'] = $product_info['bestseller'];
+		} else {
+			$data['bestseller'] = false;
+		}
 
 		if (isset($this->request->post['weight'])) {
 			$data['weight'] = $this->request->post['weight'];
@@ -1427,7 +1451,7 @@ class ControllerCatalogProduct extends Controller {
 
 				$json[] = array(
 					'product_id' => $result['product_id'],
-					'name'       => strip_tags(html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8')),
+					'name'       => strip_tags(html_entity_decode($result['name'] . " | " . $result['model'] . " | " . $result['price'], ENT_QUOTES, 'UTF-8')),
 					'model'      => $result['model'],
 					'option'     => $option_data,
 					'price'      => $result['price']

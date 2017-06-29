@@ -321,6 +321,48 @@
                 </div>
               </div>
               <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-bestseller">Топ продаж</label>
+                <div class="col-sm-10">
+                  <select name="bestseller" id="input-bestseller" class="form-control">
+                    <?php if ($bestseller) { ?>
+                    <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                    <option value="0"><?php echo $text_disabled; ?></option>
+                    <?php } else { ?>
+                    <option value="1"><?php echo $text_enabled; ?></option>
+                    <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-sale">Акция</label>
+                <div class="col-sm-10">
+                  <select name="sale" id="input-sale" class="form-control">
+                    <?php if ($sale) { ?>
+                    <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                    <option value="0"><?php echo $text_disabled; ?></option>
+                    <?php } else { ?>
+                    <option value="1"><?php echo $text_enabled; ?></option>
+                    <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-latest">Новинка</label>
+                <div class="col-sm-10">
+                  <select name="latest" id="input-latest" class="form-control">
+                    <?php if ($latest) { ?>
+                    <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
+                    <option value="0"><?php echo $text_disabled; ?></option>
+                    <?php } else { ?>
+                    <option value="1"><?php echo $text_enabled; ?></option>
+                    <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
+                    <?php } ?>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-sort-order"><?php echo $entry_sort_order; ?></label>
                 <div class="col-sm-10">
                   <input type="text" name="sort_order" value="<?php echo $sort_order; ?>" placeholder="<?php echo $entry_sort_order; ?>" id="input-sort-order" class="form-control" />
