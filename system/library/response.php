@@ -56,11 +56,13 @@ class Response {
 	}
 
 	public function output() {
+		
 		if ($this->output) {
+			
 			if ($this->level) {
-				$output = $this->compress($this->output, $this->level);
+				$output = $this->compress(minify($this->output,1), $this->level);
 			} else {
-				$output = $this->output;
+				$output = minify($this->output,1);
 			}
 
 			if (!headers_sent()) {
@@ -73,3 +75,111 @@ class Response {
 		}
 	}
 }
+
+define('SAFE', 1);
+define('EXTREME', 2);
+define('EXTREME_SAVE_COMMENTS', 4);
+define('EXTREME_SAVE_PRE', 3);
+
+function minify($html, $level=2)
+{
+	switch((int)$level)
+	{
+		case 0:
+			//Don't minify
+		break;
+		
+		case 1: //Safe Minify
+		
+			// Replace all whitespace characters between tags with a single space
+			$html = preg_replace("`>\s+<`", "> <", $html);
+		break;
+		
+		case 2: //Extreme Minify
+			
+			// Placeholder to save conditional comment hack, <pre> and <code> tags
+			$place_holders = array(
+				'<!-->' => '_!--_',
+			);
+			
+			//Set placeholders
+			$html = strtr($html, $place_holders);
+			
+			// Remove all normal comments - save conditionals
+			$html = preg_replace('/<!--[^(\[|(<!))](.*)-->/Uis', '', $html);
+			
+			// Replace all whitespace characters with a single space
+			$html = preg_replace("`\s+`", " ", $html);
+			
+			// Remove the spaces between adjacent html tags
+			$html = preg_replace("`> <`", "><", $html);
+			
+			// Replace space between adjacent a tags for readability
+			$html = str_replace("</a><a", "</a> <a", $html);
+			
+			// Restore placeholders
+			$html = strtr($html, array_flip($place_holders));
+		break;
+		
+		case 3: //Extreme, save pre and code tags
+			// Placeholder to save conditional comment hack, <pre> and <code> tags
+			$place_holders = array(
+				'<!-->' => '_!--_',
+				'<pre>' => '_pre_',
+				'</pre>' => '_/pre_',
+				'<code>' => '_code_',
+				'</code>' => '_/code_'
+			);
+			
+			//Set placeholders
+			$html = strtr($html, $place_holders);
+			
+			// Remove all normal comments - save conditionals
+			$html = preg_replace('/<!--[^(\[|(<!))](.*)-->/Uis', '', $html);
+			
+			// Replace all whitespace characters with a single space
+			$html = preg_replace(">`\s+`<", "> <", $html);
+			
+			// Remove the spaces between adjacent html tags
+			$html = preg_replace("`> <`", "><", $html);
+			
+			// Replace space between adjacent a tags for readability
+			$html = str_replace("</a><a", "</a> <a", $html);
+			
+			// Restore placeholders
+			$html = strtr($html, array_flip($place_holders));
+		
+		break;
+		
+		case 4: //Extreme minify, save comments
+			
+			// Replace all whitespace characters with a single space
+			$html = preg_replace("`\s+`", " ", $html);
+			
+			// Remove spaces between adjacent html tags
+			$html = preg_replace("`> <`", "><", $html);
+			
+			// Restore space between ajacent a tags
+			$html = str_replace("</a><a", "</a> <a", $html);
+		break;
+	}
+
+	//Normalize ampersands
+	//$html = str_replace("&amp;", "&", $html);
+	//$html = str_replace("&", "&amp;", $html);
+	
+	//Replace common entities with more compatible versions
+	$replace = array(
+		'&nbsp;' => '&#160;',
+		'&copy;' => '&#169;',
+		'&acirc;' => '&#226;',
+		'&cent;' => '&#162;',
+		'&raquo;' => '&#187;',
+		'&laquo;' => '&#171;'
+	);
+	
+	//$html = strtr($html, $replace);
+	
+	//Return minified html
+	return $html;
+}		

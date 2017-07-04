@@ -3,49 +3,76 @@
 class ControllerCheckoutBuy extends Controller {
     
     public function getMap() {
-        $city_name = $this->request->get['ref'];
-        $req = array();
-        $req['modelName'] = "AddressGeneral";
-        $req['calledMethod'] = "getWarehouses";
-        $req['apiKey'] = "cded6c36ad86d141f3d5c3dc21fbf878";
-        $req['methodProperties'] = array(
-            'CityRef' => $city_name,
-            'Language' => 'ru ИЛИ ua'
-        );
-        
-        $response = $this->sendRequest("https://api.novaposhta.ua/v2.0/json/AddressGeneral/getWarehouses", $req);
-        
         $points = array();
-        foreach($response['data'] as $point) {
-            $points[] = array(
-                'id' => $point['Ref'],
-                'name' => $point['DescriptionRu'],
-                'longitude' => $point['Longitude'],
-                'latitude' => $point['Latitude']
+        $city_name = $this->request->get['ref'];
+
+        $response = $this->db->query("SELECT * FROM `oc_np_point` WHERE `city_ref` LIKE '" . $city_name . "'");
+
+
+        if($response->num_rows > 0){
+            foreach($response->rows as $point) {
+                $points[] = array(
+                    'id' => $point['ref'],
+                    'name' => $point['name'],
+                    'longitude' => $point['longitude'],
+                    'latitude' => $point['latitude']
+                );
+            }
+        }else{
+            $req = array();
+            $req['modelName'] = "AddressGeneral";
+            $req['calledMethod'] = "getWarehouses";
+            $req['apiKey'] = "cded6c36ad86d141f3d5c3dc21fbf878";
+            $req['methodProperties'] = array(
+                'CityRef' => $city_name,
+                'Language' => 'ru ИЛИ ua'
             );
+            $response = $this->sendRequest("https://api.novaposhta.ua/v2.0/json/AddressGeneral/getWarehouses", $req);
+            foreach($response['data'] as $point) {
+
+                $this->db->query("INSERT INTO `oc_np_point` (`ref`, `name`, `longitude`, `latitude`, `city_ref`) VALUES ('" . $point['Ref'] . "', '" . $point['DescriptionRu'] . "', '" . $point['Longitude'] . "', '" . $point['Latitude'] . "', '" . $city_name . "')");
+
+                $points[] = array(
+                    'id' => $point['Ref'],
+                    'name' => $point['DescriptionRu'],
+                    'longitude' => $point['Longitude'],
+                    'latitude' => $point['Latitude']
+                );
+            }
         }
         
         $data['points'] = $points;
         $this->response->setOutput(json_encode(array('points' => $points)));
+
+      
     }
 
      public function citySearch() {
-        $city_name = $this->request->get['text'];
-        $req = array();
+        
+       /* $req = array();
         $req['modelName'] = "Address";
         $req['calledMethod'] = "getCities";
         $req['apiKey'] = "cded6c36ad86d141f3d5c3dc21fbf878";
-        $req['methodProperties'] = array('FindByString' => $city_name);
+        $req['methodProperties'] = array('FindByString' => '', 'Warehouse' => '1');
         
         $response = $this->sendRequest("https://api.novaposhta.ua/v2.0/json/Address/getCities", $req);
         
         $cities = array();
         foreach($response['data'] as $city) {
+            $this->db->query("INSERT INTO `oc_np_city` (`ref`, `name`) VALUES ('" . $city['Ref'] . "', '" . $city['DescriptionRu'] . "')");
+        }*/
+
+        $cities = array();
+        $city_name = $this->request->get['text'];
+        $response = $this->db->query("SELECT * FROM `oc_np_city` WHERE `name` LIKE '" . $city_name . "%'");
+
+        foreach($response->rows as $city) {
             $cities[] = array(
-                'id' => $city['Ref'],
-                'name' => $city['DescriptionRu']
+                'id' => $city['ref'],
+                'name' => $city['name']
             );
         }
+
         $this->response->setOutput(json_encode(array('cities' => $cities)));
     }
     

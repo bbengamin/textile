@@ -3,7 +3,10 @@ class ControllerCommonFooter extends Controller {
 	public function index() {
 		$this->load->language('common/footer');
 
-		$data['scripts'] = $this->document->getScripts('footer');
+		if(isset($this->request->get['path'])){
+			$path_arr = explode("_" , $this->request->get['path']);
+			$data['level1'] = $path_arr[0];
+		}
 
 		$data['text_information'] = $this->language->get('text_information');
 		$data['text_service'] = $this->language->get('text_service');
@@ -32,6 +35,13 @@ class ControllerCommonFooter extends Controller {
 				);
 			}
 		}
+
+		$this->document->addStyle('catalog/view/javascript/jquery/owl-carousel/owl.carousel.css');
+		$this->document->addScript('catalog/view/javascript/jquery/owl-carousel/owl.carousel.min.js');
+		$data['links'] = $this->document->getLinks();
+		$data['styles'] = $this->document->getStyles();
+		$data['scripts'] = $this->document->getScripts();
+		$data['scripts2'] = $this->document->getScripts('footer');
 
 		$data['contact'] = $this->url->link('information/contact');
 		$data['return'] = $this->url->link('account/return/add', '', 'SSL');

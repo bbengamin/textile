@@ -43,7 +43,7 @@
                   </div>
             </div>
             <div class="with-this-modal-btns-box hidden-xs">
-                <a href="<?php echo $checkout; ?>" class="make-it-order">Оформить заказ</a>
+                <a href="/cart" class="make-it-order">Оформить заказ</a>
                 <a href="" data-dismiss="modal" class="make-it-shopping">Продолжить покупки</a>
             </div>
         </div>

@@ -4,15 +4,6 @@ class ControllerCommonHeader extends Controller {
 		// Analytics
 		$this->load->model('extension/extension');
 		
-		$this->document->addStyle('catalog/view/javascript/jquery/owl-carousel/owl.carousel.css');
-		$this->document->addScript('catalog/view/javascript/jquery/owl-carousel/owl.carousel.min.js');
-
-		
-		if(isset($this->request->get['path'])){
-			$path_arr = explode("_" , $this->request->get['path']);
-			$data['level1'] = $path_arr[0];
-		}
-		
 		$data['analytics'] = array();
 
 		$analytics = $this->model_extension_extension->getExtensions('analytics');
@@ -38,9 +29,7 @@ class ControllerCommonHeader extends Controller {
 		$data['base'] = $server;
 		$data['description'] = $this->document->getDescription();
 		$data['keywords'] = $this->document->getKeywords();
-		$data['links'] = $this->document->getLinks();
-		$data['styles'] = $this->document->getStyles();
-		$data['scripts'] = $this->document->getScripts();
+	
 		$data['lang'] = $this->language->get('code');
 		$data['direction'] = $this->language->get('direction');
 

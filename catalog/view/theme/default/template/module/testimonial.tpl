@@ -3,7 +3,7 @@
 <?php } ?>
 <div class="row" id='reviews-box'>
     <?php foreach ($reviews as $review) { ?>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 review-wp">
+    <div class="review-wp">
         <div class="horizontal-sreview transition">
             <div class="caption review-caption">
                 <span class="review-author"><?php echo $review['author']; ?></span>
@@ -27,14 +27,3 @@
     </div>
     <?php } ?>
 </div>
-
-<script type="text/javascript">
-$('#reviews-box').owlCarousel({
-	items: 2,
-	center: true,
-	autoPlay: false,
-	navigation: true,
-	navigationText: ['<i class="fa fa-chevron-left fa-5x"></i>', '<i class="fa fa-chevron-right fa-5x"></i>'],
-	pagination: false
-});
-</script>
