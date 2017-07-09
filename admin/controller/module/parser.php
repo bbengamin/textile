@@ -63,23 +63,57 @@ class ControllerModuleParser extends Controller {
 		}
 		unset($data[0]);
 		$dd = 0;
+
+		$this->db->query("UPDATE oc_product SET status=0");
+	/*	$counter = 0;
+		$counter2 = 0;
+		foreach ($data as $row) {
+			$category_row = $row[0];
+			$model = $row[1];
+			$main_image = $row[4];
+			$price = (float)((float)$row[3] * 1.3);
+			$name = $row[2];
+			$description = $row[5];
+			
+			$in_db = $this->db->query("SELECT product_id FROM oc_product WHERE model='" . $model . "'");
+			if($in_db->num_rows){
+				$counter ++;
+			}else{
+				$counter2 ++;
+			}
+
+		}
+		var_dump($counter);
+		var_dump($counter2);
+		die;*/
 		foreach ($data as $row) {
 		
 		
 			// PRODUCT
 			$category_row = $row[0];
 			$model = $row[1];
-			$main_image = $row[5];
-			$price = (float)((float)$row[3] * 1.2);
+			$main_image = $row[4];
+			$price = (float)((float)$row[3] * 1.3);
 			$name = $row[2];
-			$description = $row[4];
+			$description = $row[5];
 			
 			$in_db = $this->db->query("SELECT product_id FROM oc_product WHERE model='" . $model . "'");
-			
 			if($in_db->num_rows){
 				$product_id = $in_db->row['product_id'];
+/*
+				$ext_arr = explode('.', $main_image);
+				$ext = end($ext_arr);
+				$db_image_name = "catalog/products/" . strtolower($this->translit($model)) . "/" . md5($main_image) . "." . $ext;
+				$model_folder = DIR_IMAGE . "catalog/products/" . strtolower($this->translit($model)) . "/";
+				$new_image_name = DIR_IMAGE . $db_image_name;
+			
+				if (!file_exists($model_folder)) {
+				    mkdir($model_folder, 0777, true);
+				}
+				copy($main_image, $new_image_name);*/
 
-				$this->db->query("UPDATE oc_product SET price=" . (int)$price . " WHERE product_id='" . (int)$product_id . "' ");
+				//$this->db->query("UPDATE oc_product SET price=" . (int)$price . ", image='" . $db_image_name . "' status=1 WHERE product_id='" . (int)$product_id . "' ");
+				$this->db->query("UPDATE oc_product SET price=" . (int)$price . ", status=1 WHERE product_id='" . (int)$product_id . "' ");
 			} else {
 				$ext_arr = explode('.', $main_image);
 				$ext = end($ext_arr);
@@ -93,62 +127,64 @@ class ControllerModuleParser extends Controller {
 				copy($main_image, $new_image_name);
 				
 				
-				$this->db->query("INSERT INTO oc_product SET model='" . $model . "', quantity='100', price='" . $price . "', manufacturer_id='0', image='" . $db_image_name . "', status=1 ");
+				$this->db->query("INSERT INTO oc_product SET model='" . $model . "', quantity='100', price='" . $price . "', manufacturer_id='0', image='" . $db_image_name . "', status=1, sort_order=110");
 
 				$product_id = $this->db->getLastId();
-			}
+			
 
 		
-			$this->db->query("DELETE FROM oc_product_description WHERE product_id = '" . (int)$product_id . "'");
-			$this->db->query("INSERT INTO oc_product_description SET product_id='" . $product_id . "', language_id='2', name='" . $this->db->escape($name) . "', description='" . $this->db->escape($description) . "', meta_title='" . $this->db->escape($name) . "'");
+				$this->db->query("DELETE FROM oc_product_description WHERE product_id = '" . (int)$product_id . "'");
+				$this->db->query("INSERT INTO oc_product_description SET product_id='" . $product_id . "', language_id='2', name='" . $this->db->escape($name) . "', description='" . $this->db->escape($description) . "', meta_title='" . $this->db->escape($name) . "'");
 
-			
-			$this->db->query("DELETE FROM oc_product_to_layout WHERE product_id = '" . (int)$product_id . "'");
-			$this->db->query("INSERT INTO oc_product_to_layout SET product_id='" . $product_id . "', store_id='0', layout_id='0'");
+				
+				$this->db->query("DELETE FROM oc_product_to_layout WHERE product_id = '" . (int)$product_id . "'");
+				$this->db->query("INSERT INTO oc_product_to_layout SET product_id='" . $product_id . "', store_id='0', layout_id='0'");
 
-			$this->db->query("DELETE FROM oc_product_to_store WHERE product_id = '" . (int)$product_id . "'");
-			$this->db->query("INSERT INTO oc_product_to_store SET product_id='" . $product_id . "', store_id='0'");
-			
-			$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "'");
-			$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape(strtolower($this->translit($model))) . "'");
+				$this->db->query("DELETE FROM oc_product_to_store WHERE product_id = '" . (int)$product_id . "'");
+				$this->db->query("INSERT INTO oc_product_to_store SET product_id='" . $product_id . "', store_id='0'");
+				
+				$this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'product_id=" . (int)$product_id . "'");
+				$this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'product_id=" . (int)$product_id . "', keyword = '" . $this->db->escape(strtolower($this->translit($model))) . "'");
 
 
-			
-			// PRODUCT_CATEGORYS	
-			$this->db->query("DELETE FROM oc_product_to_category WHERE product_id = '" . (int)$product_id . "'");							
-			$categories = explode('/', $category_row);
-			$path_a = array();
-			$category_id = 0;
-			foreach ($categories as $category) {
-				$category_q = $this->db->query("SELECT category_id FROM oc_category_description WHERE name='" . $category . "'");
+				
+				// PRODUCT_CATEGORYS	
+				$this->db->query("DELETE FROM oc_product_to_category WHERE product_id = '" . (int)$product_id . "'");							
+				$categories = explode('/', $category_row);
+				$path_a = array();
+				$category_id = 0;
+				foreach ($categories as $category) {
+					$category_q = $this->db->query("SELECT category_id FROM oc_category_description WHERE name='" . $category . "'");
 
-				if($category_q->num_rows){
-					$category_id = $category_q->row['category_id'];
-					$path_a[] = $category_id;
-				}else{
-					if(!empty($path_a)){
-						$parent_id = array_values(array_slice($path_a, -1))[0];
+					if($category_q->num_rows){
+						$category_id = $category_q->row['category_id'];
+						$path_a[] = $category_id;
 					}else{
-						$parent_id = 0;
+						if(!empty($path_a)){
+							$parent_id = array_values(array_slice($path_a, -1))[0];
+						}else{
+							$parent_id = 0;
+						}
+						$this->db->query("INSERT INTO oc_category SET parent_id=" . $parent_id . ", status=1");
+
+						$category_id = $this->db->getLastId();
+
+						$this->db->query("INSERT INTO oc_category_description SET category_id='" . $category_id . "', language_id='2', name='" . $category . "', meta_title='" . $category . "'");
+
+						$this->db->query("INSERT INTO oc_category_to_layout SET category_id='" . $category_id . "', store_id='0', layout_id='0'");
+						$this->db->query("INSERT INTO oc_category_to_store SET category_id='" . $category_id . "', store_id='0'");
+						
+						$path_a[] = $category_id;
+
+						foreach ($path_a as $i => $path) {
+							$this->db->query("INSERT INTO oc_category_path SET category_id='" . $category_id . "', path_id='" . $path . "', level='" . $i . "'");
+						}
+
 					}
-					$this->db->query("INSERT INTO oc_category SET parent_id=" . $parent_id . ", status=1");
 
-					$category_id = $this->db->getLastId();
-
-					$this->db->query("INSERT INTO oc_category_description SET category_id='" . $category_id . "', language_id='2', name='" . $category . "', meta_title='" . $category . "'");
-
-					$this->db->query("INSERT INTO oc_category_to_layout SET category_id='" . $category_id . "', store_id='0', layout_id='0'");
-					$this->db->query("INSERT INTO oc_category_to_store SET category_id='" . $category_id . "', store_id='0'");
-					
-					$path_a[] = $category_id;
-
-					foreach ($path_a as $i => $path) {
-						$this->db->query("INSERT INTO oc_category_path SET category_id='" . $category_id . "', path_id='" . $path . "', level='" . $i . "'");
-					}
-
+					$this->db->query("INSERT INTO oc_product_to_category SET product_id='" . $product_id . "', category_id='" . $category_id . "'");
 				}
 
-				$this->db->query("INSERT INTO oc_product_to_category SET product_id='" . $product_id . "', category_id='" . $category_id . "'");
 			}
 			$dd++;
 		}

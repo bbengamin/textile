@@ -69,6 +69,10 @@
                   <?php } ?>
                 </select>
               </div>
+              <div class="form-group">
+                <label class="control-label" for="input-quantity">По sort_order</label>
+                <input type="text" name="filter_position" value="<?php echo $filter_position; ?>" placeholder="" id="input-filter_position" class="form-control" />
+              </div>
               <button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-search"></i> <?php echo $button_filter; ?></button>
             </div>
           </div>
@@ -181,8 +185,14 @@ $('#button-filter').on('click', function() {
 
 	var filter_quantity = $('input[name=\'filter_quantity\']').val();
 
-	if (filter_quantity) {
-		url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+  if (filter_quantity) {
+    url += '&filter_quantity=' + encodeURIComponent(filter_quantity);
+  }
+
+  var filter_position = $('input[name=\'filter_position\']').val();
+
+	if (filter_position) {
+		url += '&filter_position=' + encodeURIComponent(filter_position);
 	}
 
 	var filter_status = $('select[name=\'filter_status\']').val();

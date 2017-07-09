@@ -260,12 +260,18 @@ class ControllerCheckoutBuy extends Controller {
                     $price = false;
                 }
                 
-                
+               /* 
                 $product_info = $this->model_catalog_product->getProduct($product['product_id']);
 
                 if ((float)$product_info['special']) {
                     $price = $this->currency->format($this->tax->calculate($product_info['price'], $product['tax_class_id'], $this->config->get('config_tax')));
                     $special = $this->currency->format($this->tax->calculate($product['price'], $product_info['tax_class_id'], $this->config->get('config_tax')));
+                } else {
+                    $special = false;
+                }*/
+                 
+                if ((float)$product['special']) {
+                    $special = $this->currency->format($this->tax->calculate($product['special'], $product['tax_class_id'], $this->config->get('config_tax')));
                 } else {
                     $special = false;
                 }

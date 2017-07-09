@@ -255,6 +255,12 @@ class ControllerCatalogProduct extends Controller {
 			$filter_status = null;
 		}
 
+		if (isset($this->request->get['filter_position'])) {
+			$filter_position = $this->request->get['filter_position'];
+		} else {
+			$filter_position = null;
+		}
+
 		if (isset($this->request->get['sort'])) {
 			$sort = $this->request->get['sort'];
 		} else {
@@ -295,6 +301,10 @@ class ControllerCatalogProduct extends Controller {
 			$url .= '&filter_status=' . $this->request->get['filter_status'];
 		}
 
+		if (isset($this->request->get['filter_position'])) {
+			$url .= '&filter_position=' . $this->request->get['filter_position'];
+		}
+
 		if (isset($this->request->get['sort'])) {
 			$url .= '&sort=' . $this->request->get['sort'];
 		}
@@ -330,6 +340,7 @@ class ControllerCatalogProduct extends Controller {
 			'filter_model'	  => $filter_model,
 			'filter_price'	  => $filter_price,
 			'filter_quantity' => $filter_quantity,
+			'filter_position' => $filter_position,
 			'filter_status'   => $filter_status,
 			'sort'            => $sort,
 			'order'           => $order,
@@ -443,6 +454,10 @@ class ControllerCatalogProduct extends Controller {
 			$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
 		}
 
+		if (isset($this->request->get['filter_position'])) {
+			$url .= '&filter_position=' . $this->request->get['filter_position'];
+		}
+
 		if (isset($this->request->get['filter_status'])) {
 			$url .= '&filter_status=' . $this->request->get['filter_status'];
 		}
@@ -480,6 +495,10 @@ class ControllerCatalogProduct extends Controller {
 
 		if (isset($this->request->get['filter_quantity'])) {
 			$url .= '&filter_quantity=' . $this->request->get['filter_quantity'];
+		}	
+
+		if (isset($this->request->get['filter_position'])) {
+			$url .= '&filter_position=' . $this->request->get['filter_position'];
 		}
 
 		if (isset($this->request->get['filter_status'])) {
@@ -508,6 +527,7 @@ class ControllerCatalogProduct extends Controller {
 		$data['filter_model'] = $filter_model;
 		$data['filter_price'] = $filter_price;
 		$data['filter_quantity'] = $filter_quantity;
+		$data['filter_position'] = $filter_position;
 		$data['filter_status'] = $filter_status;
 
 		$data['sort'] = $sort;

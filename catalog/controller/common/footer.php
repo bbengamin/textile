@@ -1,12 +1,33 @@
 <?php
 class ControllerCommonFooter extends Controller {
+	public function timerOff() {
+		$this->session->data['sale'] = false;
+		$this->session->data['timer'] = false;
+		$this->response->setOutput(json_encode(array()));
+	}
+	public function timer() {
+		$json = array();
+		
+		if(isset($this->session->data['timer'])){
+			$now = mktime($this->request->get['hours'], $this->request->get['minutes'], 0, $this->request->get['mounth']  , $this->request->get['day'], $this->request->get['year']);
+			if($this->session->data['timer'] && $now < $this->session->data['timer']){
+				$json['timer'] = date("d.m.Y.H.i" , $this->session->data['timer']);
+			}else{
+				$this->session->data['sale'] = false;
+				$json['timer'] = false;
+			}
+			$json['reload'] = false;
+		}else {
+			$this->session->data['timer'] = mktime($this->request->get['hours'], $this->request->get['minutes'] + 1, 0, $this->request->get['mounth']  , $this->request->get['day'], $this->request->get['year']);
+			$this->session->data['sale'] = true;
+			$json['timer'] = date("d.m.Y.H.i" , $this->session->data['timer']);
+			$json['reload'] = true;
+		}
+		$this->response->setOutput(json_encode($json));
+	}
+	
 	public function index() {
 		$this->load->language('common/footer');
-
-		if(isset($this->request->get['path'])){
-			$path_arr = explode("_" , $this->request->get['path']);
-			$data['level1'] = $path_arr[0];
-		}
 
 		$data['text_information'] = $this->language->get('text_information');
 		$data['text_service'] = $this->language->get('text_service');
@@ -42,6 +63,8 @@ class ControllerCommonFooter extends Controller {
 		$data['styles'] = $this->document->getStyles();
 		$data['scripts'] = $this->document->getScripts();
 		$data['scripts2'] = $this->document->getScripts('footer');
+		
+		$data['timer'] = (isset($this->session->data['timer'])) ? date("d.m.Y.H.i" , $this->session->data['timer']) : false;
 
 		$data['contact'] = $this->url->link('information/contact');
 		$data['return'] = $this->url->link('account/return/add', '', 'SSL');
@@ -81,6 +104,11 @@ class ControllerCommonFooter extends Controller {
 
 			$this->model_tool_online->addOnline($ip, $this->customer->getId(), $url, $referer);
 		}
+		
+		$this->load->model('setting/setting');
+		$current_language_id = $this->config->get('config_language_id');
+		$data['loadmore_button'] = $this->config->get('loadmore_button_name_'.$current_language_id);
+		$data['loadmore_status'] = $this->config->get('loadmore_status');
 
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/footer.tpl')) {
 			return $this->load->view($this->config->get('config_template') . '/template/common/footer.tpl', $data);

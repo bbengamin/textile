@@ -1,0 +1,28 @@
+---------- Date: 2017-07-08 14:47:55 ~ IP : 10.240.1.45 ----------
+REQUEST URI : /
+MOD DETAILS:
+   modFile   : /home/ubuntu/workspace/vqmod/xml/mega_filter.xml
+   id        : Mega Filter PRO
+   version   : 1.5.x
+   vqmver    : 2.4.0
+   author    : marsilea15@gmail.com
+
+File Name    : catalog/view/theme/*/template/common/header.tpl(0)
+VQModObject::applyMod - SEARCH NOT FOUND (ABORTING MOD): catalog/view/javascript/bootstrap/js/bootstrap.min.js
+----------------------------------------------------------------------
+
+
+---------- Date: 2017-07-08 14:49:10 ~ IP : 10.240.0.189 ----------
+REQUEST URI : /postelnoe-belie
+MOD DETAILS:
+   modFile   : /home/ubuntu/workspace/vqmod/xml/mega_filter.xml
+   id        : Mega Filter PRO
+   version   : 1.5.x
+   vqmver    : 2.4.0
+   author    : marsilea15@gmail.com
+
+File Name    : catalog/controller/product/category.php(0)
+VQModObject::applyMod - SEARCH NOT FOUND (ABORTING MOD): $product_total = $this->model_catalog_product->getTotalProducts($filter_data);
+----------------------------------------------------------------------
+
+

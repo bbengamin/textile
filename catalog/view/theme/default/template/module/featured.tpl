@@ -1,42 +1,55 @@
-<h3><?php echo $heading_title; ?></h3>
+<h1 class='category-h1'>Популярные товары</h1>
 <div class="row">
   <?php foreach ($products as $product) { ?>
-  <div class="product-layout col-lg-3 col-md-3 col-sm-6 col-xs-12">
-    <div class="product-thumb transition">
-      <div class="image"><a href="<?php echo $product['href']; ?>"><img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" class="img-responsive" /></a></div>
-      <div class="caption">
-        <h4><a href="<?php echo $product['href']; ?>"><?php echo $product['name']; ?></a></h4>
-        <p><?php echo $product['description']; ?></p>
-        <?php if ($product['rating']) { ?>
-        <div class="rating">
-          <?php for ($i = 1; $i <= 5; $i++) { ?>
-          <?php if ($product['rating'] < $i) { ?>
-          <span class="fa fa-stack"><i class="fa fa-star-o fa-stack-2x"></i></span>
-          <?php } else { ?>
-          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-          <?php } ?>
-          <?php } ?>
+    <div class="product-layout product-grid col-xs-12 col-sm-6 col-md-4">
+      <div class="product-thumb">
+        <div class="images-box-category">
+            <div class="image">
+              <div class="marks-box">
+                <?php if($product['bestseller']) { ?>
+                  <span class='marks hit-mark'>Хит продаж</span>
+                <?php } ?>
+                <?php if($product['sale']) { ?>
+                  <span class='marks special-mark'>Акция</span>
+                <?php } ?>
+                <?php if($product['latest']) { ?>
+                  <span class='marks latest-mark'>Новинка</span>
+                <?php } ?>
+              </div>
+              <?php if($product['percent']) { ?>
+              <div class=right-top-product>
+                <span class='percent'>-<?php echo $product['percent']; ?>%</span>
+              </div>
+              <?php } ?>
+              <a class='quick-view' data-id="<?php echo $product['product_id']; ?>">
+              <div class="view-more"><i class="fa fa-search" aria-hidden="true"></i>Подробнее</div>
+              <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" class="img-responsive" />
+              </a>
+            </div>
         </div>
-        <?php } ?>
-        <?php if ($product['price']) { ?>
-        <p class="price">
-          <?php if (!$product['special']) { ?>
-          <?php echo $product['price']; ?>
-          <?php } else { ?>
-          <span class="price-new"><?php echo $product['special']; ?></span> <span class="price-old"><?php echo $product['price']; ?></span>
-          <?php } ?>
-          <?php if ($product['tax']) { ?>
-          <span class="price-tax"><?php echo $text_tax; ?> <?php echo $product['tax']; ?></span>
-          <?php } ?>
-        </p>
-        <?php } ?>
+        <h4><a class='quick-view' data-id="<?php echo $product['product_id']; ?>"><?php echo $product['name']; ?></a></h4>
+        <div>
+          <div class="caption">
+            <?php if ($product['price']) { ?>
+            <div class="price">
+              <?php if (!$product['special']) { ?>
+                <span class='price-value'><?php echo $product['price']; ?></span>
+              <?php } else { ?>
+                <span class="price-old"><?php echo $product['price']; ?></span>
+                <span class='price-new'><?php echo $product['special']; ?></span>
+              <?php } ?>
+            </div>
+            <?php if($product['saved']) { ?>
+              <span class='saved'><span class='saved-wp'><?php echo $product['saved']; ?></span>экономия</span>
+            <?php } ?>
+            <?php } ?>
+          </div>
+          <div class="button-group-category">
+            <div class='cart-add-btn' onclick="cart.add('<?php echo $product['product_id']; ?>', '<?php echo $product['minimum']; ?>');"><i class="fa fa-shopping-cart" aria-hidden="true"></i><span class="">Добавить в корзину</span></div>
+            <div class='fast-order-btn' data-id="<?php echo $product['product_id']; ?>"><i class="fa fa-clock-o" aria-hidden="true"></i><span class="">Купить в 1 клик</span></div>
+          </div>
+        </div>
       </div>
-      <div class="button-group">
-        <button type="button" onclick="cart.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-shopping-cart"></i> <span class="hidden-xs hidden-sm hidden-md"><?php echo $button_cart; ?></span></button>
-        <button type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button>
-        <button type="button" data-toggle="tooltip" title="<?php echo $button_compare; ?>" onclick="compare.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-exchange"></i></button>
-      </div>
-    </div>
-  </div>
-  <?php } ?>
+    </div>                                                    
+<?php } ?>
 </div>

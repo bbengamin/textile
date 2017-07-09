@@ -88,6 +88,8 @@ class ControllerProductCategory extends Controller {
 		}
 
 		$category_info = $this->model_catalog_category->getCategory($category_id);
+		
+		$data['home_products'] = $this->load->controller('product/ajax/mainProducts', array('category_id'=>$category_id));
 
 		if ($category_info) {
 			$this->document->setTitle($category_info['meta_title']);
@@ -185,42 +187,36 @@ class ControllerProductCategory extends Controller {
 				} else {
 					$image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				}
-
+				
 				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
 					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
 				} else {
 					$price = false;
 				}
-
+	
 				if ((float)$result['special']) {
 					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+					$saved = $this->currency->format($result['price'] - $result['special']);
+					$percent = ceil($saved * 100 / $result['price']);
 				} else {
 					$special = false;
+					$saved = false;
+					$percent = false;
 				}
-
-				if ($this->config->get('config_tax')) {
-					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
-				} else {
-					$tax = false;
-				}
-
-				if ($this->config->get('config_review_status')) {
-					$rating = (int)$result['rating'];
-				} else {
-					$rating = false;
-				}
-
+	
 				$data['products'][] = array(
 					'product_id'  => $result['product_id'],
 					'thumb'       => $image,
 					'name'        => $result['name'],
-					'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get('config_product_description_length')) . '..',
+					'bestseller'  => $result['bestseller'],
+					'latest'      => $result['latest'],
+					'sale'        => $result['sale'],
 					'price'       => $price,
 					'special'     => $special,
-					'tax'         => $tax,
-					'minimum'     => $result['minimum'] > 0 ? $result['minimum'] : 1,
-					'rating'      => $result['rating'],
-					'href'        => $this->url->link('product/product', 'path=' . $this->request->get['path'] . '&product_id=' . $result['product_id'] . $url)
+					'saved'     => $saved,
+					'percent'     => $percent,
+					'minimum'     => 1,
+					'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
 				);
 			}
 
@@ -233,8 +229,39 @@ class ControllerProductCategory extends Controller {
 			if (isset($this->request->get['limit'])) {
 				$url .= '&limit=' . $this->request->get['limit'];
 			}
-
 			$data['sorts'] = array();
+			
+			$data['sorts'][] = array(
+				'text'  => "По умолчанию",
+				'value' => 'p.sort_order-ASC',
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.sort_order&order=ASC' . $url)
+			);
+
+			$data['sorts'][] = array(
+				'text'  => "по увеличению цены",
+				'value' => 'p.price-ASC',
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=ASC' . $url)
+			);
+
+			$data['sorts'][] = array(
+				'text'  => "по уменьшению  цены",
+				'value' => 'p.price-DESC',
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.price&order=DESC' . $url)
+			);
+
+			$data['sorts'][] = array(
+				'text'  => "по названию",
+				'value' => 'pd.name-ASC',
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=pd.name&order=ASC' . $url)
+			);
+
+			$data['sorts'][] = array(
+				'text'  => "сначала новые",
+				'value' => 'p.date_added-DESC',
+				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.date_added&order=DESC' . $url)
+			);
+
+		/*	$data['sorts'] = array();
 
 			$data['sorts'][] = array(
 				'text'  => $this->language->get('text_default'),
@@ -290,7 +317,7 @@ class ControllerProductCategory extends Controller {
 				'text'  => $this->language->get('text_model_desc'),
 				'value' => 'p.model-DESC',
 				'href'  => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '&sort=p.model&order=DESC' . $url)
-			);
+			);*/
 
 			$url = '';
 

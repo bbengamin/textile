@@ -88,8 +88,10 @@
       element.tick = function() {
         var timeLeft = Math.floor((date - new Date()) / 1000),
           unit;
-        if (timeLeft < 0) clearInterval(element.data('interval'));
-        else {
+        if (timeLeft < 0) {
+          clearInterval(element.data('interval'));
+          location.reload();
+        } else {
           $.each(units.en, function(i) {
             if (i < config.etLastUnit) {
               unit = Math.floor(timeLeft / units.sec[i]);

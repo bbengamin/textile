@@ -1,18 +1,20 @@
+
 <div class="clearfix">
   <h1 class='category-h1'><?php echo $name; ?></h1>
   <?php if(isset($categories)){ ?>
     <div class='category-tabs'>
-    <?php foreach ($categories as $category) { ?>
-        <a href='#c<?php echo $category["category_id"]; ?>'><?php echo $category['name']; ?></a>
-    <?php } ?>
+    <?php $i=0; foreach ($categories as $category) { ?>
+        <a class='<?php echo ($i==0) ? "active" : ""; ?>' href='#c<?php echo $category["category_id"]; ?>'><?php echo $category['name']; ?></a>
+    <?php $i++; } ?>
     </div>
-    <?php foreach ($categories as $category) { ?>
-    <div class="row category-tab" id='c<?php echo $category["category_id"]; ?>'>
+    <?php $i=0; foreach ($categories as $category) { ?>
+    <div class="row <?php echo ($i==0) ? "active" : ""; ?> category-tab" id='c<?php echo $category["category_id"]; ?>'>
       <?php foreach ($category['products'] as $product) { ?>
       <div class="product-layout product-grid col-xs-12 col-sm-6 col-md-4">
         <div class="product-thumb">
           <div class="images-box-category">
               <div class="image">
+                
                 <div class="marks-box">
                   <?php if($product['bestseller']) { ?>
                     <span class='marks hit-mark'>Хит продаж</span>
@@ -30,6 +32,7 @@
                 </div>
                 <?php } ?>
                 <a class='quick-view' data-id="<?php echo $product['product_id']; ?>">
+                <div class="view-more"><i class="fa fa-search" aria-hidden="true"></i>Подробнее</div>
                 <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" class="img-responsive" />
                 </a>
               </div>
@@ -60,7 +63,7 @@
       </div>
       <?php } ?>
     </div>
-    <?php } ?>
+    <?php $i++; } ?>
   <?php } else{ ?>
     <div class="row" >
       <?php foreach ($products as $product) { ?>
@@ -85,6 +88,7 @@
                 </div>
                 <?php } ?>
                 <a class='quick-view' data-id="<?php echo $product['product_id']; ?>">
+                <div class="view-more"><i class="fa fa-search" aria-hidden="true"></i>Подробнее</div>
                 <img src="<?php echo $product['thumb']; ?>" alt="<?php echo $product['name']; ?>" title="<?php echo $product['name']; ?>" class="img-responsive" />
                 </a>
               </div>

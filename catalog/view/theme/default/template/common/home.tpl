@@ -9,8 +9,6 @@
     <?php $class = 'col-sm-12'; ?>
     <?php } ?>
     <div id="content" class="<?php echo $class; ?>">
-    <div id='main-products-block' class='main-products'>
-    </div>
     <?php echo $content_top; ?>
     <?php echo $content_bottom; ?></div>
     <?php echo $column_right; ?></div>

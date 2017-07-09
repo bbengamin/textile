@@ -5,8 +5,8 @@ class Pagination {
 	public $limit = 20;
 	public $num_links = 8;
 	public $url = '';
-	public $text_first = '|&lt;';
-	public $text_last = '&gt;|';
+	public $text_first = 'Первая';
+	public $text_last = 'Последняя';
 	public $text_next = '&gt;';
 	public $text_prev = '&lt;';
 

@@ -1,13 +1,13 @@
 <?php
 class ControllerProductAjax extends Controller {
-	public function mainProducts(){
+	public function mainProducts($settings){
 		$data = array();
 		$data['button_wishlist'] = $this->language->get('button_wishlist');
 		$data['button_compare'] = $this->language->get('button_compare');
 		
 		
-		if(isset($this->request->get['category_id'])){
-			$category_id = $this->request->get['category_id']; 
+		if(isset($settings['category_id'])){
+			$category_id = $settings['category_id']; 
 		}else{
 			$category_id = 0;
 		}
@@ -15,12 +15,48 @@ class ControllerProductAjax extends Controller {
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/category');
 		$this->load->model('tool/image');
+		
+		$data['categories_top'] = array();
+
+		$categories = $this->model_catalog_category->getCategories(0);
+
+		foreach ($categories as $category) {
+			if ($category['top']) {
+				// Level 2
+				$children_data = array();
+
+				$children = $this->model_catalog_category->getCategories($category['category_id']);
+
+				foreach ($children as $child) {
+					$filter_data = array(
+						'filter_category_id'  => $child['category_id'],
+						'filter_sub_category' => true
+					);
+
+					$children_data[] = array(
+						'name'  => $child['name'] . ($this->config->get('config_product_count') ? ' (' . $this->model_catalog_product->getTotalProducts($filter_data) . ')' : ''),
+						'href'  => $this->url->link('product/category', 'path=' . $category['category_id'] . '_' . $child['category_id'])
+					);
+				}
+
+				// Level 1
+				$data['categories_top'][] = array(
+					'category_id'     => $category['category_id'],
+					'name'     => $category['name'],
+					'children' => $children_data,
+					'column'   => $category['column'] ? $category['column'] : 1,
+					'href'     => $this->url->link('product/category', 'path=' . $category['category_id'])
+				);
+			}
+		}
 	
 		
 		$limit = 30;
 		$categories = $this->model_catalog_category->getCategories($category_id);
 		$category_name_q = $this->db->query("SELECT name FROM oc_category_description WHERE language_id='" . (int)$this->config->get('config_language_id') . "' AND category_id=" . $category_id);
+
 		$data['name'] = $category_name_q->row['name'];
+		$data['category_id'] = $category_id;
 		if($categories){
 			$data['categories'] = array();
 			foreach ($categories as $category) {
@@ -204,9 +240,9 @@ class ControllerProductAjax extends Controller {
 		*/
 		
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/product/products_home.tpl')) {
-			$this->response->setOutput($this->load->view($this->config->get('config_template') . '/template/product/products_home.tpl', $data));
+			return $this->load->view($this->config->get('config_template') . '/template/product/products_home.tpl', $data);
 		} else {
-			$this->response->setOutput($this->load->view('default/template/product/products_home.tpl', $data));
+			return $this->load->view('default/template/product/products_home.tpl', $data);
 		}
 	}
 }

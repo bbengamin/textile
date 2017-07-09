@@ -24,58 +24,55 @@ class ControllerModuleLatest extends Controller {
 			'limit' => $setting['limit']
 		);
 
-		$results = $this->model_catalog_product->getProducts($filter_data);
+		$products = $this->db->query("SELECT product_id FROM oc_product WHERE latest=1 LIMIT 0,9")->rows;
+		foreach ($products as $product) {
+			$product_info = $this->model_catalog_product->getProduct($product['product_id']);
 
-		if ($results) {
-			foreach ($results as $result) {
-				if ($result['image']) {
-					$image = $this->model_tool_image->resize($result['image'], $setting['width'], $setting['height']);
+			if ($product_info) {
+				if ($product_info['image']) {
+					$image = $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				} else {
-					$image = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
+					$image = $this->model_tool_image->resize('placeholder.png', $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'));
 				}
 
 				if (($this->config->get('config_customer_price') && $this->customer->isLogged()) || !$this->config->get('config_customer_price')) {
-					$price = $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')));
+					$price = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')));
 				} else {
 					$price = false;
 				}
-
-				if ((float)$result['special']) {
-					$special = $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax')));
+	
+				if ((float)$product_info['special']) {
+					$special = $this->currency->format($this->tax->calculate($product_info['special'], $product_info['tax_class_id'], $this->config->get('config_tax')));
+					$saved = $this->currency->format($product_info['price'] - $product_info['special']);
+					$percent = ceil($saved * 100 / $product_info['price']);
 				} else {
 					$special = false;
-				}
-
-				if ($this->config->get('config_tax')) {
-					$tax = $this->currency->format((float)$result['special'] ? $result['special'] : $result['price']);
-				} else {
-					$tax = false;
-				}
-
-				if ($this->config->get('config_review_status')) {
-					$rating = $result['rating'];
-				} else {
-					$rating = false;
+					$saved = false;
+					$percent = false;
 				}
 
 				$data['products'][] = array(
-					'product_id'  => $result['product_id'],
+					'product_id'  => $product_info['product_id'],
 					'thumb'       => $image,
-					'name'        => $result['name'],
-					'description' => utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get('config_product_description_length')) . '..',
+					'name'        => $product_info['name'],
+					'bestseller'  => $product_info['bestseller'],
+					'latest'      => $product_info['latest'],
+					'sale'        => $product_info['sale'],
+					'description' => utf8_substr(strip_tags(html_entity_decode($product_info['description'], ENT_QUOTES, 'UTF-8')), 0, $this->config->get('config_product_description_length')) . '..',
 					'price'       => $price,
 					'special'     => $special,
-					'tax'         => $tax,
-					'rating'      => $rating,
-					'href'        => $this->url->link('product/product', 'product_id=' . $result['product_id'])
+					'percent'     => $percent,
+					'saved'     => $saved,
+					'href'        => $this->url->link('product/product', 'product_id=' . $product_info['product_id'])
 				);
 			}
+		}
 
-			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/latest.tpl')) {
-				return $this->load->view($this->config->get('config_template') . '/template/module/latest.tpl', $data);
-			} else {
-				return $this->load->view('default/template/module/latest.tpl', $data);
-			}
+
+		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/latest.tpl')) {
+			return $this->load->view($this->config->get('config_template') . '/template/module/latest.tpl', $data);
+		} else {
+			return $this->load->view('default/template/module/latest.tpl', $data);
 		}
 	}
 }

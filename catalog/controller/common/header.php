@@ -102,6 +102,13 @@ class ControllerCommonHeader extends Controller {
 		$this->load->model('catalog/category');
 
 		$this->load->model('catalog/product');
+		
+		if (isset($this->request->get['path'])) {
+			$parts = explode('_', (string)$this->request->get['path']);
+			$data['category_id'] = $parts[0]; 
+		}else{
+			$data['category_id'] = 0;
+		}
 
 		$data['categories'] = array();
 
@@ -148,14 +155,14 @@ class ControllerCommonHeader extends Controller {
 			if (isset($this->request->get['product_id'])) {
 				$class = '-' . $this->request->get['product_id'];
 			} elseif (isset($this->request->get['path'])) {
-				$class = '-' . $this->request->get['path'];
+				$data['class'] = 'common-home';
 			} elseif (isset($this->request->get['manufacturer_id'])) {
 				$class = '-' . $this->request->get['manufacturer_id'];
 			} else {
 				$class = '';
+				$data['class'] = 'checkout-buy';//str_replace('/', '-', $this->request->get['route']) . $class;
 			}
 
-			$data['class'] = 'checkout-buy';//str_replace('/', '-', $this->request->get['route']) . $class;
 		} else {
 			$data['class'] = 'common-home';
 		}
